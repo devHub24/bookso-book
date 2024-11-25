@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: "books"
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: ' '
+    driverClassName: org.h2.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        jdbc:
+          fetch_size: 100
+
+  management:
+    endpoints:
+      web:
+        base-path: "/actuator"
+        exposure:
+          include: "*"
+
+    metrics:
+      enable:
+        all: true
+
+
+
+
+server:
+  port: 8282
