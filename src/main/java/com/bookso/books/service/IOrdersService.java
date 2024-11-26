@@ -12,7 +12,7 @@ import java.util.List;
 public interface IOrdersService {
 
     public boolean createOrder(OrderInDto ordersIn);
-    public List<OrdersDto> getMyOrders(String customerId);
-    public boolean updateOrder(String orderCode, OrdersDto ordersDto);
-    public boolean updateOrderStatus(String orderCode, String orderStatus);
+    public List<OrdersDto> getMyOrders(Long customerId);
+    public boolean updateOrder(Long orderCode, OrdersDto ordersDto);
+    public boolean updateOrderStatus(Long orderCode, String orderStatus);
 }

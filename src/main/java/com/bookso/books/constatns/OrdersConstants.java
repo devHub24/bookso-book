@@ -16,6 +16,7 @@ public class OrdersConstants {
     public static final String ORDER_CREATED_SC = "Order Created Successfully";
     public static final String ORDER_UPDATE_SC = "Order Updated Successfully";
     public static final String ORDER_DELIVERED_SC = "Order Delivered Successfully";
+    public static final String NO_ORDER_FOUND = "Empty set of Orders";
 
     //OrdersStatusMap
     public static final Map<String, String> orderStatusMaps = Map.ofEntries(

@@ -6,19 +6,19 @@ import com.bookso.books.dto.OrdersDto;
 import com.bookso.books.entity.Orders;
 import com.bookso.books.enums.OrderErrors;
 import com.bookso.books.exceptions.BooksoException;
-import com.bookso.books.mapper.BooksMapper;
 import com.bookso.books.mapper.OrdersMapper;
-import com.bookso.books.repo.IBooksRepository;
 import com.bookso.books.repo.IOrdersRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Book;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Stream;
 
 
 /*
@@ -60,18 +60,36 @@ public class ImpOrdersService implements IOrdersService{
         }
     }
 
+    /*
+    * @author: santhosh kumar
+    * @description: Method to fetch orders based on customer id
+    * @params: customerId
+    * @returns: List of orders of that customer
+     */
     @Override
-    public List<OrdersDto> getMyOrders(String customerId) {
-        return List.of();
+    @Transactional(rollbackOn = {DataAccessException.class, BooksoException.class})
+    public List<OrdersDto> getMyOrders(Long customerId) {
+        try(Stream<Orders> ordersStream = ordersRepo.fetchMyOrders(customerId)){
+            List<OrdersDto> ordersDtoList = ordersStream.map(order -> ordersMapper.toOrdersDto(order)).toList();
+            if(ordersDtoList.isEmpty()){
+                log.error("No order found for the customer id:{}", customerId);
+                throw new BooksoException(OrderErrors.GENERIC_ERROR, OrdersConstants.NO_ORDER_FOUND);
+            }
+            return ordersDtoList;
+        }catch (DataAccessException e){
+            log.error("Error while fetching orders cause:{}",e.getMessage());
+            throw new BooksoException(OrderErrors.GENERIC_ERROR, "Error while fetching orders");
+        }
+
     }
 
     @Override
-    public boolean updateOrder(String orderCode, OrdersDto ordersDto) {
+    public boolean updateOrder(Long orderCode, OrdersDto ordersDto) {
         return false;
     }
 
     @Override
-    public boolean updateOrderStatus(String orderCode, String orderStatus) {
+    public boolean updateOrderStatus(Long orderCode, String orderStatus) {
         return false;
     }
 
