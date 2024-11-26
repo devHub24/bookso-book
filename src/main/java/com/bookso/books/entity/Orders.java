@@ -21,8 +21,8 @@ import java.time.LocalDate;
 public class Orders extends BaseEntity {
 
     @Id
-    private String orderCode;
-    private String bookCode;
+    private Long orderCode;
+    private Long bookCode;
     private Long customerId;
     private double fare;
     private LocalDate  orderedOn;
