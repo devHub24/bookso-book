@@ -16,7 +16,7 @@ spring:
     properties:
       hibernate:
         jdbc:
-          fetch_size: 100
+          fetch_size: 500
 
   management:
     endpoints:
