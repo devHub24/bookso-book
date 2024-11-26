@@ -3,6 +3,7 @@ package com.bookso.books.service;
 import com.bookso.books.constatns.OrdersConstants;
 import com.bookso.books.dto.OrderInDto;
 import com.bookso.books.dto.OrdersDto;
+import com.bookso.books.dto.OrdersUpdateDto;
 import com.bookso.books.entity.Orders;
 import com.bookso.books.enums.OrderErrors;
 import com.bookso.books.exceptions.BooksoException;
@@ -13,12 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-
-import java.awt.print.Book;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
+
+import static com.bookso.books.constatns.OrdersConstants.NO_ORDER_FOUND;
+import static com.bookso.books.constatns.OrdersConstants.ORDER_NOT_FOUND;
 
 
 /*
@@ -83,14 +85,45 @@ public class ImpOrdersService implements IOrdersService{
 
     }
 
+    /*
+    * @author: santhosh kumar
+    * @description: Method to Update order status
+    * @params: Order code and Order status Code
+    * @returns: true or false
+     */
     @Override
-    public boolean updateOrder(Long orderCode, OrdersDto ordersDto) {
-        return false;
+    public boolean updateOrderStatus(OrdersUpdateDto ordersUpdateDto) {
+        try{
+            Orders order = ordersRepo.findById(ordersUpdateDto.getOrderCode()).orElseThrow(()->
+                    new BooksoException(OrderErrors.ORDER_NOT_FOUND, String.format(ORDER_NOT_FOUND, ordersUpdateDto.getOrderCode())));
+            order.setOrderStatus(getOrderStatus(ordersUpdateDto.getOrderStatus()));
+            Orders savedOrder = ordersRepo.save(order);
+            log.info("Orders updated:{}", savedOrder);
+            return true;
+        }catch(DataAccessException e){
+            throw new BooksoException(OrderErrors.GENERIC_ERROR, "Error while updating order status");
+        }
     }
 
+    /*
+    * @author: santhosh kumar
+    * @description: Method to getMy Orders with status
+    * @params: customer id and Status
+    * @returns: A list of Orders
+     */
     @Override
-    public boolean updateOrderStatus(Long orderCode, String orderStatus) {
-        return false;
+    @Transactional(rollbackOn = {BooksoException.class})
+    public List<OrdersDto> getMyOrderByStatus(Long customerId, String status) {
+        try(Stream<Orders> ordersStream = ordersRepo.fetchMyOrdersByStatus(customerId, getOrderStatus(status))){
+            List<OrdersDto> ordersDtoList = ordersStream.map(order -> ordersMapper.toOrdersDto(order)).toList();
+            if(ordersDtoList.isEmpty()){
+                throw new BooksoException(OrderErrors.NO_ORDERS, String.format(ORDER_NOT_FOUND,customerId));
+            }
+           return ordersDtoList;
+        }catch(DataAccessException e){
+            log.error("Error fetching orders, cause:{}",e.getMessage());
+            throw new BooksoException(OrderErrors.GENERIC_ERROR, "Error fetching orders");
+        }
     }
 
     /*
@@ -103,12 +136,12 @@ public class ImpOrdersService implements IOrdersService{
         return 10000L+(new Random().nextInt(90000));
     }
 
-        /*
-        * @author: santhosh Kumar
-        * @description: Method to get the order status by order status code
-        * @params: Order status Code: OS1
-        * @returns: constant value of Order Status
-         */
+    /*
+     * @author: santhosh Kumar
+     * @description: Method to get the order status by order status code
+     * @params: Order status Code: OS1
+     * @returns: constant value of Order Status
+     */
     private String getOrderStatus(String orderStatusCode){
         return OrdersConstants.orderStatusMaps.get(orderStatusCode);
     }

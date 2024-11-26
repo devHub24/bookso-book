@@ -13,4 +13,7 @@ public interface IOrdersRepository extends JpaRepository<Orders, Long> {
 
     @Query("SELECT order FROM Orders order WHERE order.customerId= :customerId ")
     public Stream<Orders> fetchMyOrders(@Param("customerId")Long customerId);
+
+    @Query("SELECT order FROM Orders order WHERE order.customerId= :customerId AND order.orderStatus LIKE %:status%")
+    public Stream<Orders> fetchMyOrdersByStatus(@Param("customerId") Long customerId, @Param("status")String status);
 }

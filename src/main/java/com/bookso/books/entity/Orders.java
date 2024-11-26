@@ -1,5 +1,6 @@
 package com.bookso.books.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.*;
@@ -25,6 +26,7 @@ public class Orders extends BaseEntity {
     private Long bookCode;
     private Long customerId;
     private double fare;
+    @Column(updatable = false)
     private LocalDate  orderedOn;
     private String orderStatus;
 }

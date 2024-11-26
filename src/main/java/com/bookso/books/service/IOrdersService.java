@@ -2,6 +2,7 @@ package com.bookso.books.service;
 
 import com.bookso.books.dto.OrderInDto;
 import com.bookso.books.dto.OrdersDto;
+import com.bookso.books.dto.OrdersUpdateDto;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ public interface IOrdersService {
 
     public boolean createOrder(OrderInDto ordersIn);
     public List<OrdersDto> getMyOrders(Long customerId);
-    public boolean updateOrder(Long orderCode, OrdersDto ordersDto);
-    public boolean updateOrderStatus(Long orderCode, String orderStatus);
+    public boolean updateOrderStatus(OrdersUpdateDto ordersUpdateDto);
+    public List<OrdersDto> getMyOrderByStatus(Long customerId, String status);
+
 }
