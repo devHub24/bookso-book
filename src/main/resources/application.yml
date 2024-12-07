@@ -2,6 +2,9 @@ spring:
   application:
     name: "books"
 
+  profiles:
+    active: "qa"
+
   datasource:
     url: jdbc:h2:mem:testdb
     username: sa
@@ -18,18 +21,24 @@ spring:
         jdbc:
           fetch_size: 500
 
+  config:
+    import: "optional:configserver:http://localhost:8071/"
+
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "guest"
+    password: "guest"
+
   management:
     endpoints:
       web:
-        base-path: "/actuator"
         exposure:
           include: "*"
 
-    metrics:
-      enable:
-        all: true
-
-
+    endpoint:
+      health:
+        show-details: "always"
 
 
 server:

@@ -3,6 +3,7 @@ package com.bookso.books.controller;
 
 import com.bookso.books.dto.BaseResponseDto;
 import com.bookso.books.dto.BooksDto;
+import com.bookso.books.dto.BooksRecord;
 import com.bookso.books.dto.ErrorDto;
 import com.bookso.books.service.IBooksService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -106,6 +107,13 @@ public class BooksController {
         booksService.deleteBooks(bookCode);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseDto.builder().code(STATUS_200).message(BOOK_DELETED_SC).build());
+    }
+
+    @Autowired
+    private BooksRecord booksRecord;
+    @GetMapping("/get-info")
+    public BooksRecord getRecord(){
+        return booksRecord;
     }
 
 }
